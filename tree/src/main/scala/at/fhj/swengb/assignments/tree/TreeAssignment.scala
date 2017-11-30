@@ -39,7 +39,14 @@ object Graph {
     * @param convert a converter function
     * @return
     */
-  def traverse[A, B](tree: Tree[A])(convert: A => B): Seq[B] =  ???
+  def traverse[A, B](tree: Tree[A])(convert: A => B): Seq[B] = tree match{
+
+    case Node(value) => Seq(convert(value))
+
+    case Branch(left,right) => traverse(left)(convert) ++ traverse(right)(convert)
+  }
+
+
 
 
   /**
@@ -61,10 +68,34 @@ object Graph {
               treeDepth: Int,
               factor: Double = 0.75,
               angle: Double = 45.0,
-              colorMap: Map[Int, Color] = Graph.colorMap): Tree[L2D] = ???
+              colorMap: Map[Int, Color] = Graph.colorMap): Tree[L2D] = {
+    require(treeDepth >= 0 && treeDepth <= (colorMap.size - 1))
 
+    val counter = 1
+    /** val counter is initialized with the value 1
+        Trickster Time
+      **/
+
+    def constructTree(root : L2D, counter: Int): Tree[L2D] = counter match {
+      case rootOnly if treeDepth == 0 => Node(root)
+      case nodesExist if counter == treeDepth =>
+        Branch(Node(root),
+          Branch(
+            Node(root.left(factor,angle,colorMap(counter-1))),
+            Node(root.right(factor,angle,colorMap(counter-1)))
+          )
+        )
+      case _ =>
+        Branch(Node(root),
+          Branch(
+            constructTree(root.left(factor,angle,colorMap(counter-1)),counter+1),
+            constructTree(root.right(factor,angle,colorMap(counter-1)),counter+1)
+          )
+        )
+    }
+    constructTree(L2D(start,initialAngle,length,colorMap(counter-1)),counter)
+  }
 }
-
 
 
 
