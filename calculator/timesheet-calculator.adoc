@@ -7,16 +7,28 @@
 | Hours
 | Description
 
-| 29.11.17
-| 1
-| Review of this and that
+| 07.12.17
+| 3
+| Reading threw the specs and task at hand, to comprehend what is going on
 
-| 30.11.17
-| 5
-| implemented css
+| 08.12.17
+| 4
+| implementing css and working with SceneBuilder to design the GUI
 
-| 11.07.17
+| 08.12.17
 | 2
-| fixed bugs
+| RpnOperations task to be forfilled, task compelte
+
+| 09.12.17
+| 12
+| RpnCalculator making problems, trying to cope with task
+
+| 09.12.17
+| 4
+| trying to find alternate solution of implementation
+
+| 09.12.17
+| 1
+| fixing bugs if possible
 
 |===

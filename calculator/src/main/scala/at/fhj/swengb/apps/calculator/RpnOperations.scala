@@ -51,7 +51,12 @@ case object Mul extends BinOp {
   * a Val(Double.NaN) shoudl be returned.
   */
 case object Div extends BinOp {
-  override def eval(left: Val, right: Val): Val = ???
+  override def eval(left: Val, right: Val): Val = {
+    if (right.value.equals(0.0))
+      Val(Double.NaN)
+    else
+      Val(left.value / right.value)
+  }
 }
 
 /**

@@ -1,5 +1,6 @@
 package at.fhj.swengb.apps.calculator
 
+import java.util.NoSuchElementException
 import scala.util.Try
 
 /**
@@ -14,7 +15,19 @@ object RpnCalculator {
     * @param s a string representing a calculation, for example '1 2 +'
     * @return
     */
-  def apply(s: String): Try[RpnCalculator] = ???
+  def apply(s: String): Try[RpnCalculator] = {
+    if (s.isEmpty)
+      Try(RpnCalculator())
+    else {
+      try {
+        val stacking: List[Op] = s.split(' ').map(e => Op(e)).toList
+        stacking.foldLeft(Try(RpnCalculator()))(
+          (acc, elem) => acc.get.push(elem))
+      } catch {
+        case e: Exception => Try[RpnCalculator](throw e)
+      }
+    }
+  }
 
 }
 
@@ -32,7 +45,33 @@ case class RpnCalculator(stack: List[Op] = Nil) {
     * @param op
     * @return
     */
-  def push(op: Op): Try[RpnCalculator] = ???
+  def push(op: Op): Try[RpnCalculator] = {
+
+    op match {
+      case one: Val => Try(RpnCalculator(stack :+ one))
+      case two: BinOp =>
+        try {
+          def additonalValue(doMathe: RpnCalculator): Val = {
+            val result = doMathe.peek()
+            result match {
+              case avalue: Val   => avalue
+              case _: BinOp => throw new NoSuchElementException
+            }
+          }
+
+          val first = additonalValue(this)
+          var intermediateResult = pop()._2
+          val second = additonalValue(intermediateResult)
+          intermediateResult = intermediateResult.pop()._2
+
+          val result: Val = two.eval(first, second)
+
+          intermediateResult.push(result)
+        } catch {
+          case three: Exception => Try[RpnCalculator](throw three)
+        }
+    }
+  }
 
   /**
     * Pushes val's on the stack.
@@ -42,26 +81,31 @@ case class RpnCalculator(stack: List[Op] = Nil) {
     * @param op
     * @return
     */
-  def push(op: Seq[Op]): Try[RpnCalculator] = ???
+  def push(op: Seq[Op]): Try[RpnCalculator] = op.foldLeft(Try(RpnCalculator()))((acc, elem) => acc.get.push(elem))
 
   /**
     * Returns an tuple of Op and a RevPolCal instance with the remainder of the stack.
     *
     * @return
     */
-  def pop(): (Op, RpnCalculator) = ???
+  def pop(): (Op, RpnCalculator) = (stack.head, RpnCalculator(stack.tail))
 
   /**
     * If stack is nonempty, returns the top of the stack. If it is empty, this function throws a NoSuchElementException.
     *
     * @return
     */
-  def peek(): Op = ???
+  def peek(): Op = {
+    if (stack.isEmpty)
+      throw new NoSuchElementException
+    else
+      stack.head
+  }
 
   /**
     * returns the size of the stack.
     *
     * @return
     */
-  def size: Int = ???
+  def size: Int = stack.size
 }
