@@ -17,14 +17,16 @@ object RpnCalculator {
     */
   def apply(s: String): Try[RpnCalculator] = {
     if (s.isEmpty)
+
       Try(RpnCalculator())
-    else {
-      try {
-        val stacking: List[Op] = s.split(' ').map(e => Op(e)).toList
-        stacking.foldLeft(Try(RpnCalculator()))(
-          (acc, elem) => acc.get.push(elem))
-      } catch {
-        case e: Exception => Try[RpnCalculator](throw e)
+    else {   try {
+        val stacking: List[Op] = s.split("\\s").map(x => Op(x)).toList
+        stacking.foldLeft(Try(RpnCalculator())
+        )((acc, element) => acc.get.push(element))
+      }
+
+    catch {
+      case p: Exception => Try[RpnCalculator](throw p)
       }
     }
   }
@@ -49,6 +51,7 @@ case class RpnCalculator(stack: List[Op] = Nil) {
 
     op match {
       case one: Val => Try(RpnCalculator(stack :+ one))
+
       case two: BinOp =>
         try {
           def additonalValue(doMathe: RpnCalculator): Val = {
@@ -58,14 +61,11 @@ case class RpnCalculator(stack: List[Op] = Nil) {
               case _: BinOp => throw new NoSuchElementException
             }
           }
-
           val first = additonalValue(this)
           var intermediateResult = pop()._2
           val second = additonalValue(intermediateResult)
           intermediateResult = intermediateResult.pop()._2
-
           val result: Val = two.eval(first, second)
-
           intermediateResult.push(result)
         } catch {
           case three: Exception => Try[RpnCalculator](throw three)
